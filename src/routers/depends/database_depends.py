@@ -7,14 +7,13 @@ from src.core.settings import settings
 
 
 class SQLAlchemyDependency:
-
     def __init__(self):
         self.sqlalchemy = None
 
-    def __call__(self) -> SQLAlchemy:
+    async def __call__(self) -> SQLAlchemy:
         if self.sqlalchemy is None:
             self.sqlalchemy = SQLAlchemy(settings.REAL_DATABASE_URL)
-            return self.sqlalchemy
+        return self.sqlalchemy
 
 
 get_sql_alchemy = SQLAlchemyDependency()
