@@ -14,4 +14,11 @@ class SensorUseCase:
 
     async def add_new_sensor(self, sensor_data: SensorDataClass):
         result = await self.sensor_rep.add_new_sensor(sensor_data)
-        pass
+        return SensorResponse.model_validate(result)
+
+    async def delete_sensor(self, sensor_id: int):
+        await self.sensor_rep.delete_sensor(sensor_id)
+
+    async def change_sensor_settings(self, sensor_id: int, sensor_data: SensorDataClass):
+        result = await self.sensor_rep.change_sensor_settings(sensor_id, sensor_data)
+        return SensorResponse.model_validate(result)

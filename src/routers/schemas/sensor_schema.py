@@ -7,8 +7,8 @@ from src.dataclasses.dataclasses import SensorDataClass
 class SensorCreate(BaseModel):
     name: str
     description: str | None
-    reaction_type: ReactionChoose
-    active: bool | None
+    reaction_type: ReactionChoose = ReactionChoose.LOGGING
+    active: bool | None = True
 
     def to_entity(self):
         return SensorDataClass(
@@ -16,6 +16,19 @@ class SensorCreate(BaseModel):
             description=self.description,
             reaction_type=self.reaction_type,
             active=self.active
+        )
+
+
+class SensorUpdate(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    reaction_type: ReactionChoose | None = None
+
+    def to_entity(self):
+        return SensorDataClass(
+            name=self.name,
+            description=self.description,
+            reaction_type=self.reaction_type,
         )
 
 
