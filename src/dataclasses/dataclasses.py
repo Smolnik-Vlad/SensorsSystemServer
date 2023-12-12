@@ -1,5 +1,6 @@
 from abc import ABC
 from dataclasses import dataclass
+from datetime import datetime
 
 from src.core.choosing import EmergencyTelephoneNumber
 
@@ -30,3 +31,10 @@ class SensorOnOff(DataClassFunctionality):
 class EmergencySettings(DataClassFunctionality):
     emergency_telephone: EmergencyTelephoneNumber | None = None
     message: str | None = None
+
+
+@dataclass
+class LogDataClass(DataClassFunctionality):
+    message: str
+    time: datetime | None = None
+

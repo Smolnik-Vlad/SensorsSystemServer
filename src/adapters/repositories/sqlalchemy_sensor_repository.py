@@ -1,9 +1,9 @@
-from sqlalchemy import select, exc, delete, update
+from sqlalchemy import select, exc, delete, update, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.adapters.orm_engine.models import Sensor, CallingToEmergency
+from src.adapters.orm_engine.models import Sensor, CallingToEmergency, Log
 from src.core.exceptions import DatabaseException
-from src.dataclasses.dataclasses import SensorDataClass, SensorOnOff, EmergencySettings
+from src.dataclasses.dataclasses import SensorDataClass, SensorOnOff, EmergencySettings, LogDataClass
 from src.ports.sensor_rep import SensorRepository
 
 
@@ -27,15 +27,15 @@ class SQLAlchemySensorRepository(SensorRepository):
         return sensor
 
     async def get_all_sensors(self) -> list[SensorDataClass]:
-        # try:
-        query = select(Sensor)
-        users = await self.db_session.scalars(query)
+        try:
+            query = select(Sensor)
+            users = await self.db_session.scalars(query)
 
-        user_result = [self.__from_model_to_dataclass(user) for user in users.all()]
-        return user_result
+            user_result = [self.__from_model_to_dataclass(user) for user in users.all()]
+            return user_result
 
-    # except exc.SQLAlchemyError:
-    #     raise DatabaseException
+        except exc.SQLAlchemyError:
+            raise DatabaseException
 
     async def add_new_sensor(self, data: SensorDataClass) -> SensorDataClass:
         try:
@@ -94,7 +94,7 @@ class SQLAlchemySensorRepository(SensorRepository):
         try:
             query = (
                 update(CallingToEmergency)
-                .where(CallingToEmergency.sensor.id == sensor_id)
+                .where(CallingToEmergency.sensor_id == sensor_id)
                 .values(**data.to_dict())
                 .returning(CallingToEmergency)
             )
@@ -104,3 +104,18 @@ class SQLAlchemySensorRepository(SensorRepository):
             return sensor_result
         except exc.SQLAlchemyError:
             raise DatabaseException
+
+    async def add_log(self, sensor_id: int, data: LogDataClass):
+        try:
+            new_log = Log(sensor_id=sensor_id, **data.to_dict())
+            self.db_session.add(new_log)
+            await self.db_session.flush()
+
+        except exc.SQLAlchemyError:
+            raise DatabaseException
+
+    async def get_last_log(self, sensor_id: int):
+        request = (select(Log).where(Log.sensor_id == sensor_id)).order_by(desc(Log.time))
+        result = await self.db_session.scalars(request)
+        result = result.first()
+        return result.time

@@ -3,7 +3,7 @@ from starlette import status
 
 from src.routers.depends.use_case_dependency import get_sensor_use_case
 from src.routers.schemas.sensor_schema import SensorsResponse, SensorCreate, SensorResponse, SensorUpdate, \
-    SensorOnOffResponse, CallingToEmergencyResponse, CallingEmergencyUpdate
+    SensorOnOffResponse, CallingToEmergencyResponse, CallingEmergencyUpdate, LogCreate
 from src.usecases.sensor_usecase import SensorUseCase
 
 sensor_router = APIRouter()
@@ -39,4 +39,9 @@ async def switch_on_off(sensor_management: SensorUseCase = Depends(get_sensor_us
                     status_code=status.HTTP_200_OK)
 async def configure_calling_to_emergency(sensor_id: int, data: CallingEmergencyUpdate,
                                          sensor_management: SensorUseCase = Depends(get_sensor_use_case)):
+    return await sensor_management.configure_calling_to_emergency(sensor_id, data.to_entity())
 
+
+@sensor_router.post("/{sensor_id}/new_log", status_code=status.HTTP_201_CREATED)
+async def create_log(sensor_id: int, data: LogCreate, sensor_management: SensorUseCase = Depends(get_sensor_use_case)):
+    await sensor_management.create_new_log(sensor_id, data.to_entity())

@@ -1,6 +1,9 @@
-from src.dataclasses.dataclasses import SensorDataClass, SensorOnOff, EmergencySettings
+from datetime import datetime, timedelta
+
+from src.dataclasses.dataclasses import SensorDataClass, SensorOnOff, EmergencySettings, LogDataClass
 from src.ports.sensor_rep import SensorRepository
-from src.routers.schemas.sensor_schema import SensorsResponse, SensorResponse, SensorOnOffResponse
+from src.routers.schemas.sensor_schema import SensorsResponse, SensorResponse, SensorOnOffResponse, \
+    CallingToEmergencyResponse
 
 
 class SensorUseCase:
@@ -43,4 +46,13 @@ class SensorUseCase:
 
     async def configure_calling_to_emergency(self, sensor_id: int, data: EmergencySettings):
         result = await self.sensor_rep.change_emergency_call_settings(sensor_id, data)
+        return CallingToEmergencyResponse.model_validate(result)
+
+    async def create_new_log(self, sensor_id: int, data: LogDataClass):
+        date = await self.sensor_rep.get_last_log(sensor_id)
+        current_datetime = datetime.now()
+        time_difference = current_datetime - date
+        print(time_difference)
+        if time_difference <= timedelta(minutes=1):
+            await self.sensor_rep.add_log(sensor_id, data)
 
