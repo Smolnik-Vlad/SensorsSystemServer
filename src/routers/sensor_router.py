@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends
 from starlette import status
 
 from src.routers.depends.use_case_dependency import get_sensor_use_case
-from src.routers.schemas.sensor_schema import SensorsResponse, SensorCreate, SensorResponse, SensorUpdate
+from src.routers.schemas.sensor_schema import SensorsResponse, SensorCreate, SensorResponse, SensorUpdate, \
+    SensorOnOffResponse, CallingToEmergencyResponse, CallingEmergencyUpdate
 from src.usecases.sensor_usecase import SensorUseCase
 
 sensor_router = APIRouter()
@@ -27,3 +28,15 @@ async def delete_sensor(sensor_id: int, sensor_management: SensorUseCase = Depen
 async def delete_sensor(sensor_id: int, data: SensorUpdate,
                         sensor_management: SensorUseCase = Depends(get_sensor_use_case)):
     return await sensor_management.change_sensor_settings(sensor_id, data.to_entity())
+
+
+@sensor_router.post("/switch_on_off", response_model=SensorOnOffResponse, status_code=status.HTTP_200_OK)
+async def switch_on_off(sensor_management: SensorUseCase = Depends(get_sensor_use_case)):
+    return await sensor_management.switch_on_off()
+
+
+@sensor_router.post("/{sensor_id}/configure_calling_to_emergency", response_model=CallingToEmergencyResponse,
+                    status_code=status.HTTP_200_OK)
+async def configure_calling_to_emergency(sensor_id: int, data: CallingEmergencyUpdate,
+                                         sensor_management: SensorUseCase = Depends(get_sensor_use_case)):
+

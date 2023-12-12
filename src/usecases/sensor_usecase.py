@@ -1,6 +1,6 @@
-from src.dataclasses.dataclasses import SensorDataClass
+from src.dataclasses.dataclasses import SensorDataClass, SensorOnOff, EmergencySettings
 from src.ports.sensor_rep import SensorRepository
-from src.routers.schemas.sensor_schema import SensorsResponse, SensorResponse
+from src.routers.schemas.sensor_schema import SensorsResponse, SensorResponse, SensorOnOffResponse
 
 
 class SensorUseCase:
@@ -22,3 +22,25 @@ class SensorUseCase:
     async def change_sensor_settings(self, sensor_id: int, sensor_data: SensorDataClass):
         result = await self.sensor_rep.change_sensor_settings(sensor_id, sensor_data)
         return SensorResponse.model_validate(result)
+
+    async def switch_on_off(self):
+        sensors = await self.sensor_rep.get_all_sensors()
+        list_of_on = [sensor.active for sensor in sensors if sensor.active]
+        list_of_off = [sensor.active for sensor in sensors if not sensor.active]
+        sensor_on = SensorOnOff(active=True)
+        sensor_off = SensorOnOff(active=False)
+        if len(list_of_on) == 0:
+            result = await self.sensor_rep.switch_on_off(sensor_on)
+        elif len(list_of_off) == 0:
+            result = await self.sensor_rep.switch_on_off(sensor_off)
+        elif len(list_of_on) > len(list_of_off):
+            result = await self.sensor_rep.switch_on_off(sensor_on)
+        else:
+            result = await self.sensor_rep.switch_on_off(sensor_off)
+
+        print(f'res {result}')
+        return SensorOnOffResponse.model_validate(result)
+
+    async def configure_calling_to_emergency(self, sensor_id: int, data: EmergencySettings):
+        result = await self.sensor_rep.change_emergency_call_settings(sensor_id, data)
+

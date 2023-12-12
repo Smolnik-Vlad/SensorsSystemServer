@@ -10,7 +10,7 @@ class ReactionChoose(str, enum.Enum):
 
 
 class EmergencyTelephoneNumber(str, enum.Enum):
-    FIRE = "101"
-    POLICE = "102"
-    EMERGENCY = "103"
-    COMMON = "911"
+    T_101 = "T_101"
+    T_102 = "T_102"
+    T_103 = "T_103"
+    T_911 = "T_911"

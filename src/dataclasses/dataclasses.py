@@ -1,6 +1,8 @@
 from abc import ABC
 from dataclasses import dataclass
 
+from src.core.choosing import EmergencyTelephoneNumber
+
 
 class DataClassFunctionality(ABC):
     def to_dict(self, exclude_none=True) -> dict:
@@ -17,3 +19,14 @@ class SensorDataClass(DataClassFunctionality):
     description: str | None = None
     active: bool | None = None
     reaction_type: str | None = None
+
+
+@dataclass
+class SensorOnOff(DataClassFunctionality):
+    active: bool | None = None
+
+
+@dataclass
+class EmergencySettings(DataClassFunctionality):
+    emergency_telephone: EmergencyTelephoneNumber | None = None
+    message: str | None = None

@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 
-from src.core.choosing import ReactionChoose
+from src.core.choosing import ReactionChoose, EmergencyTelephoneNumber
 from src.dataclasses.dataclasses import SensorDataClass
 
 
@@ -41,5 +41,22 @@ class SensorResponse(BaseModel):
     active: bool
 
 
+class CallingToEmergencyResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    emergency_telephone: str | None
+    message: str | None
+    sensor_id: int
+
+
+class SensorOnOffResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    active: bool
+
+
 class SensorsResponse(BaseModel):
     sensors: list[SensorResponse] | None
+
+
+class CallingEmergencyUpdate(BaseModel):
+    emergency_telephone: EmergencyTelephoneNumber | None = None
+    message: str | None = None

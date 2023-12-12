@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.dataclasses.dataclasses import SensorDataClass
+from src.dataclasses.dataclasses import SensorDataClass, SensorOnOff, EmergencySettings
 
 
 class SensorRepository(ABC):
@@ -19,4 +19,12 @@ class SensorRepository(ABC):
 
     @abstractmethod
     async def change_sensor_settings(self, sensor_id: int, data: SensorDataClass) -> SensorDataClass:
+        pass
+
+    @abstractmethod
+    async def switch_on_off(self, data: SensorOnOff) -> SensorOnOff:
+        pass
+
+    @abstractmethod
+    async def change_emergency_call_settings(self, sensor_id: int, data: EmergencySettings):
         pass

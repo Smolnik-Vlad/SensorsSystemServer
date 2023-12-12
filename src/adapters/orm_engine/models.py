@@ -42,8 +42,8 @@ class CallingToEmergency(Base):
     id: Mapped[int] = mapped_column(
         primary_key=True, unique=True, nullable=False, autoincrement=True
     )
-    emergency_telephone: Mapped[EmergencyTelephoneNumber] = mapped_column(default=EmergencyTelephoneNumber.COMMON)
-    message: Mapped[str] = mapped_column(String(250))
+    emergency_telephone: Mapped[EmergencyTelephoneNumber | None] = mapped_column(default=EmergencyTelephoneNumber.T_911)
+    message: Mapped[str | None] = mapped_column(String(250))
 
     sensor_id: Mapped[int] = mapped_column(ForeignKey("sensor.id", ondelete="SET NULL"))
     sensor: Mapped["Sensor"] = relationship(back_populates="calling_to_em",
